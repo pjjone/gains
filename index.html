@@ -286,9 +286,39 @@ textarea.input{resize:none;min-height:64px;line-height:1.5;}
     <div class="modal-title">Выбрать упражнение</div>
     <input class="input" placeholder="Поиск…" id="pick-ex-search" oninput="renderPickExModal()" style="margin-bottom:10px;">
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;overflow-x:auto;padding-bottom:4px;" id="pick-ex-cats"></div>
-    <div id="pick-ex-list" style="max-height:360px;overflow-y:auto;"></div>
-    <div style="height:12px;"></div>
-    <button class="btn btn-ghost" onclick="closeModal('modal-pick-ex')">Закрыть</button>
+    <div id="pick-ex-list" style="max-height:220px;overflow-y:auto;"></div>
+    <div style="border-top:1px solid var(--border);margin-top:12px;padding-top:14px;">
+      <div class="label" style="margin-bottom:8px;font-weight:600;">➕ Создать новое упражнение:</div>
+      <input class="input" id="quick-ex-name" placeholder="Название упражнения" style="margin-bottom:8px;">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;" id="quick-cat-picker"></div>
+      <input type="hidden" id="quick-ex-cat" value="Другое">
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary" onclick="createAndPickExercise()" style="flex:1">Создать и добавить</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-pick-ex')" style="flex:1">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Edit Exercise -->
+<div class="modal-overlay" id="modal-edit-ex">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Редактировать упражнение</div>
+    <input type="hidden" id="edit-ex-id">
+    <div style="margin-bottom:12px;">
+      <div class="label">Название</div>
+      <input class="input" id="edit-ex-name" placeholder="Название упражнения" style="margin-top:6px;">
+    </div>
+    <div style="margin-bottom:16px;">
+      <div class="label">Категория</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;" id="edit-cat-picker"></div>
+      <input type="hidden" id="edit-ex-cat" value="Другое">
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-primary" onclick="saveEditExercise()" style="flex:1">Сохранить</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit-ex')" style="flex:1">Отмена</button>
+    </div>
   </div>
 </div>
 
@@ -349,18 +379,42 @@ function load(){
   if(d){state={exercises:[],programs:[],workouts:[],...JSON.parse(d)};}
   else{
     state.exercises=[
+      // Спина
       {id:'e1',name:'Тяга верхнего блока',category:'Спина'},
       {id:'e2',name:'Тяга горизонтального блока',category:'Спина'},
-      {id:'e3',name:'Гиперэкстензия',category:'Спина'},
+      {id:'e3',name:'Гиперэкстензия две ноги',category:'Спина'},
+      {id:'e13',name:'Гиперэкстензия по одной ноге',category:'Спина'},
+      {id:'e14',name:'Тяга к себе горизонтальная по одной руке',category:'Спина'},
+      {id:'e15',name:'Тяга к себе двумя руками изогнутый гриф узкий',category:'Спина'},
+      {id:'e16',name:'Тяга штанги в наклоне',category:'Спина'},
+      {id:'e17',name:'Тяга в тренажёр турник W-образная',category:'Спина'},
+      {id:'e18',name:'Тяга вниз на тренажёре узким хватом',category:'Спина'},
+      {id:'e19',name:'Тяга каната вниз на тренажёре',category:'Спина'},
+      {id:'e20',name:'Трапеции с гантелями по бокам',category:'Спина'},
+      // Грудь
       {id:'e4',name:'Жим гантелей лёжа',category:'Грудь'},
       {id:'e5',name:'Разводка гантелей лёжа',category:'Грудь'},
+      {id:'e21',name:'Жим лёжа в наклоне гантели прижаты',category:'Грудь'},
+      {id:'e22',name:'Пресс блин за голову',category:'Грудь'},
+      {id:'e23',name:'Пресс в тренажёре',category:'Грудь'},
+      // Ноги
       {id:'e6',name:'Приседания',category:'Ноги'},
       {id:'e7',name:'Жим ногами',category:'Ноги'},
       {id:'e8',name:'Икры сидя',category:'Ноги'},
-      {id:'e9',name:'Подъём гантелей на бицепс',category:'Бицепс'},
+      {id:'e24',name:'Выпады с гантелями',category:'Ноги'},
+      {id:'e25',name:'Жим ногами по одной',category:'Ноги'},
+      // Плечи
       {id:'e10',name:'Разводка гантелей в стороны',category:'Плечи'},
       {id:'e11',name:'Жим гантелей вверх сидя',category:'Плечи'},
-      {id:'e12',name:'Трицепс на блоке',category:'Трицепс'},
+      // Бицепс
+      {id:'e9',name:'Подъём гантелей на бицепс стоя',category:'Бицепс'},
+      {id:'e27',name:'Бицепс стоя с гантелью по одной руке',category:'Бицепс'},
+      {id:'e28',name:'Бицепс стоя по одной руке тяга снизу',category:'Бицепс'},
+      {id:'e29',name:'Тяга кроссовер бицепс по одной руке',category:'Бицепс'},
+      // Трицепс
+      {id:'e12',name:'Трицепс на блоке канат',category:'Трицепс'},
+      {id:'e30',name:'Трицепс с гантелей лёжа по одной',category:'Трицепс'},
+      {id:'e31',name:'Трицепс с канатом',category:'Трицепс'},
     ];
     state.programs=[
       {id:'p1',name:'Спина',icon:'🦾',exerciseIds:['e1','e2','e3']},
@@ -485,8 +539,11 @@ function renderExLibModal(){
   const filtered=state.exercises.filter(e=>e.name.toLowerCase().includes(q));
   list.innerHTML=filtered.length?filtered.map(e=>`
     <div class="exlib-item">
-      <div><div class="exlib-name">${e.name}</div><div class="exlib-cat">${e.category}</div></div>
-      <div onclick="deleteExercise('${e.id}')" style="width:28px;height:28px;border-radius:50%;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--danger);">✕</div>
+      <div style="flex:1;min-width:0;"><div class="exlib-name">${e.name}</div><div class="exlib-cat">${e.category}</div></div>
+      <div style="display:flex;gap:6px;">
+        <div onclick="openEditExerciseModal('${e.id}')" style="width:28px;height:28px;border-radius:50%;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--muted);">✏️</div>
+        <div onclick="deleteExercise('${e.id}')" style="width:28px;height:28px;border-radius:50%;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--danger);">✕</div>
+      </div>
     </div>`).join(''):
     '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Не найдено</div>';
 }
@@ -529,6 +586,43 @@ function deleteExercise(id){
   save();renderExLibModal();showToast('Удалено');
 }
 
+function openEditExerciseModal(id){
+  const ex=state.exercises.find(e=>e.id===id);if(!ex)return;
+  document.getElementById('edit-ex-id').value=id;
+  document.getElementById('edit-ex-name').value=ex.name;
+  document.getElementById('edit-ex-cat').value=ex.category;
+  renderCatPicker('edit-cat-picker','edit-ex-cat');
+  openModal('modal-edit-ex');
+}
+
+function saveEditExercise(){
+  const id=document.getElementById('edit-ex-id').value;
+  const name=document.getElementById('edit-ex-name').value.trim();
+  if(!name){showToast('Введи название');return;}
+  const cat=document.getElementById('edit-ex-cat').value;
+  const ex=state.exercises.find(e=>e.id===id);
+  if(ex){ex.name=name;ex.category=cat;}
+  save();
+  closeModal('modal-edit-ex');
+  renderExLibModal();
+  renderPickExModal();
+  showToast('✅ Сохранено');
+}
+
+function createAndPickExercise(){
+  const name=document.getElementById('quick-ex-name').value.trim();
+  if(!name){showToast('Введи название');return;}
+  const cat=document.getElementById('quick-ex-cat').value||'Другое';
+  const newEx={id:uid(),name,category:cat};
+  state.exercises.push(newEx);
+  save();
+  document.getElementById('quick-ex-name').value='';
+  renderPickExModal();
+  // Auto-pick the new exercise
+  pickExercise(newEx.id);
+  showToast('✅ Создано и добавлено');
+}
+
 // ---- PICK EXERCISE ----
 function renderPickExModal(){
   const q=document.getElementById('pick-ex-search').value.toLowerCase();
@@ -550,7 +644,9 @@ function setPickCat(cat){pickExCat=cat;renderPickExModal();}
 function openPickExerciseModal(target){
   pickExTarget=target;pickExCat='';
   document.getElementById('pick-ex-search').value='';
+  document.getElementById('quick-ex-name').value='';
   renderPickExModal();
+  renderCatPicker('quick-cat-picker','quick-ex-cat');
   openModal('modal-pick-ex');
 }
 
