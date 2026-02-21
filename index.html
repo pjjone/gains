@@ -209,6 +209,20 @@ textarea.input{resize:none;min-height:64px;line-height:1.5;}
 </nav>
 </div>
 
+<!-- MODAL: Export Reminder -->
+<div class="modal-overlay" id="modal-export-remind">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:48px;margin-bottom:12px;">💾</div>
+      <div class="modal-title" style="text-align:center;">Сохрани данные</div>
+      <div style="font-size:14px;color:var(--muted);line-height:1.6;">Перед тренировкой рекомендуем сделать резервную копию. Это займёт секунду.</div>
+    </div>
+    <button class="btn btn-primary" onclick="exportAndThenStart()" style="margin-bottom:10px;">💾 Экспорт и начать</button>
+    <button class="btn btn-ghost" onclick="skipExportAndStart()">Пропустить, начать тренировку</button>
+  </div>
+</div>
+
 <!-- MODAL: Start -->
 <div class="modal-overlay" id="modal-start">
   <div class="modal">
@@ -640,8 +654,28 @@ function deleteProgram(id){
   save();renderPrograms();showToast('Удалено');
 }
 
-// ---- START WORKOUT ----
+// ---- EXPORT REMINDER BEFORE WORKOUT ----
 function openStartWorkoutModal(){
+  if(state.workouts.length>0){
+    openModal('modal-export-remind');
+    return;
+  }
+  _openStartWorkoutModal();
+}
+
+function skipExportAndStart(){
+  closeModal('modal-export-remind');
+  _openStartWorkoutModal();
+}
+
+function exportAndThenStart(){
+  exportData();
+  closeModal('modal-export-remind');
+  setTimeout(()=>_openStartWorkoutModal(), 500);
+}
+
+// ---- START WORKOUT ----
+function _openStartWorkoutModal(){
   const list=document.getElementById('start-programs-list');
   list.innerHTML=state.programs.map(p=>`
     <div class="prog-card" onclick="startWorkoutWithProgram('${p.id}');closeModal('modal-start');" style="margin:0 0 10px;">
