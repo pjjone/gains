@@ -5,15 +5,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0d0d12">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d0d12">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f4f4f8">
 <title>GAINS</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ===== DARK THEME (default) ===== */
 :root {
   --bg:#0d0d12;--s1:#14141c;--s2:#1e1e2a;--s3:#28283a;--border:#2e2e42;
-  --accent:#b8ff3c;--purple:#7c5cfc;--text:#eeeef8;--muted:#6a6a85;
+  --accent:#b8ff3c;--accent-text:#0d0d12;--purple:#7c5cfc;
+  --text:#eeeef8;--muted:#6a6a85;
   --danger:#ff4d6d;--green:#06d6a0;--orange:#ff9f43;--r:14px;
+  --shadow:0 2px 12px rgba(0,0,0,.4);
+}
+/* ===== LIGHT THEME ===== */
+@media(prefers-color-scheme:light){
+  :root{
+    --bg:#f4f4f8;--s1:#ffffff;--s2:#f0f0f5;--s3:#e4e4ec;--border:#dcdce8;
+    --accent:#5a9e00;--accent-text:#ffffff;--purple:#6b44e8;
+    --text:#1a1a2e;--muted:#8888a0;
+    --danger:#d63050;--green:#059669;--orange:#d97706;
+    --shadow:0 2px 12px rgba(0,0,0,.08);
+  }
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow:hidden;}
@@ -21,7 +35,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .screen{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 0 24px;display:none;flex-direction:column;}
 .screen.active{display:flex;}
 .screen::-webkit-scrollbar{display:none;}
-.topbar{padding:env(safe-area-inset-top,44px) 20px 16px;background:linear-gradient(to bottom,var(--s1) 80%,transparent);position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:flex-end;}
+.topbar{padding:env(safe-area-inset-top,44px) 20px 16px;background:var(--s1);position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--border);}
 .topbar-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--accent);line-height:1;}
 .topbar-sub{font-size:12px;color:var(--muted);margin-top:2px;}
 .icon-btn{width:38px;height:38px;border-radius:50%;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--text);flex-shrink:0;}
@@ -32,23 +46,25 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .sec{padding:0 20px;margin-bottom:8px;margin-top:20px;display:flex;justify-content:space-between;align-items:center;}
 .sec-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--muted);}
 .sec-action{font-size:12px;color:var(--accent);font-weight:600;cursor:pointer;}
-.card{margin:0 20px 10px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;position:relative;overflow:hidden;}
+.card{margin:0 20px 10px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;position:relative;overflow:hidden;box-shadow:var(--shadow);}
 .btn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;}
-.btn-primary{background:var(--accent);color:#0d0d12;}
+.btn-primary{background:var(--accent);color:var(--accent-text);}
 .btn-primary:active{transform:scale(0.98);}
 .btn-ghost{background:var(--s2);border:1px solid var(--border);color:var(--text);}
 .btn-danger{background:transparent;border:1px solid var(--danger);color:var(--danger);}
+.btn-export{background:var(--s2);border:2px solid var(--accent);color:var(--accent);}
 .btn-sm{padding:8px 16px;font-size:13px;width:auto;display:inline-block;}
 .input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;}
 .input:focus{outline:none;border-color:var(--accent);}
 .input::placeholder{color:var(--muted);}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:flex-end;justify-content:center;z-index:100;backdrop-filter:blur(4px);}
+textarea.input{resize:none;min-height:64px;line-height:1.5;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:100;backdrop-filter:blur(4px);}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--s1);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:24px 20px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 24px);width:100%;max-width:430px;max-height:90dvh;overflow-y:auto;}
+.modal{background:var(--s1);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:24px 20px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 24px);width:100%;max-width:430px;max-height:92dvh;overflow-y:auto;}
 .modal::-webkit-scrollbar{display:none;}
 .modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:16px;}
 .modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;}
-.prog-card{margin:0 20px 10px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color .2s;}
+.prog-card{margin:0 20px 10px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color .2s;box-shadow:var(--shadow);}
 .prog-card:active{border-color:var(--accent);}
 .prog-icon{width:48px;height:48px;border-radius:12px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
 .prog-info{flex:1;min-width:0;}
@@ -59,22 +75,26 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .exlib-item{margin:0 0 8px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;}
 .exlib-name{font-weight:500;font-size:14px;}
 .exlib-cat{font-size:11px;color:var(--muted);margin-top:2px;}
-.ex-block{margin:0 20px 12px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.ex-block{margin:0 20px 12px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);}
 .ex-block-head{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}
 .ex-block-name{font-weight:600;font-size:15px;}
 .ex-block-prev{font-size:11px;color:var(--muted);margin-top:2px;}
-.sets-table{padding:12px 16px;}
+.sets-table{padding:12px 16px 8px;}
 .sets-row{display:grid;grid-template-columns:28px 1fr 1fr 36px;gap:8px;align-items:center;margin-bottom:8px;}
 .sets-head{font-size:11px;color:var(--muted);text-align:center;margin-bottom:8px;}
 .set-n{width:28px;height:28px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);font-weight:700;flex-shrink:0;}
-.set-n.done{background:var(--accent);color:#0d0d12;}
+.set-n.done{background:var(--accent);color:var(--accent-text);}
 .set-input{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:8px 4px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;text-align:center;width:100%;-webkit-appearance:none;}
 .set-input:focus{outline:none;border-color:var(--accent);}
 .check-set{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--muted);transition:all .15s;flex-shrink:0;}
-.check-set.done{background:var(--accent);border-color:var(--accent);color:#0d0d12;}
-.add-set-btn{margin:4px 16px 12px;padding:8px;border:1px dashed var(--border);border-radius:10px;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;width:calc(100% - 32px);}
+.check-set.done{background:var(--accent);border-color:var(--accent);color:var(--accent-text);}
+.note-row{padding:0 16px 12px;}
+.note-input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;resize:none;min-height:52px;line-height:1.5;}
+.note-input:focus{outline:none;border-color:var(--accent);}
+.note-input::placeholder{color:var(--muted);}
+.add-set-btn{margin:0 16px 12px;padding:8px;border:1px dashed var(--border);border-radius:10px;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;width:calc(100% - 32px);}
 .hist-date{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--muted);padding:0 20px;margin-top:18px;margin-bottom:8px;}
-.hist-card{margin:0 20px 10px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;cursor:pointer;transition:border-color .2s;}
+.hist-card{margin:0 20px 10px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;cursor:pointer;transition:border-color .2s;box-shadow:var(--shadow);}
 .hist-card:active{border-color:var(--accent);}
 .hist-card-top{display:flex;justify-content:space-between;margin-bottom:6px;}
 .hist-card-name{font-weight:600;font-size:15px;}
@@ -93,9 +113,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .empty-state p{font-size:14px;line-height:1.6;}
 .chip{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;background:var(--s2);border:1px solid var(--border);color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s;}
 .chip.selected{background:var(--purple);border-color:var(--purple);color:#fff;}
-.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:var(--accent);color:#0d0d12;}
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--s3);border:1px solid var(--border);border-radius:12px;padding:10px 20px;font-size:13px;font-weight:600;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:var(--accent);color:var(--accent-text);}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--s3);border:1px solid var(--border);border-radius:12px;padding:10px 20px;font-size:13px;font-weight:600;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow);}
 .toast.show{opacity:1;}
+.export-banner{margin:0 20px 10px;background:var(--s1);border:2px solid var(--accent);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+.export-banner-text{flex:1;}
+.export-banner-title{font-weight:600;font-size:14px;color:var(--accent);}
+.export-banner-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.label{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;}
 </style>
 </head>
 <body>
@@ -106,6 +131,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 <div class="screen active" id="screen-home">
   <div class="topbar">
     <div><div class="topbar-title">GAINS</div><div class="topbar-sub" id="home-date"></div></div>
+    <div class="icon-btn" onclick="openExportModal()">💾</div>
+  </div>
+  <!-- Export reminder banner -->
+  <div id="export-reminder" style="display:none;margin-top:12px;">
+    <div class="export-banner" onclick="openExportModal()">
+      <div style="font-size:24px;">💾</div>
+      <div class="export-banner-text">
+        <div class="export-banner-title">Не забудь сохранить данные!</div>
+        <div class="export-banner-sub">Экспортируй резервную копию тренировок</div>
+      </div>
+      <div style="font-size:18px;color:var(--muted)">→</div>
+    </div>
   </div>
   <div class="sec"><div class="sec-title">Быстрый старт</div></div>
   <div style="padding:0 20px;">
@@ -196,16 +233,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
     <div class="modal-handle"></div>
     <div class="modal-title" id="modal-prog-title">Новая программа</div>
     <div style="margin-bottom:12px;">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Название</div>
+      <div class="label">Название</div>
       <input class="input" id="prog-name-input" placeholder="Спина, Ноги, Грудь…">
     </div>
     <div style="margin-bottom:12px;">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Иконка</div>
+      <div class="label">Иконка</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;" id="icon-picker"></div>
       <input type="hidden" id="prog-icon-val" value="🏋️">
     </div>
     <div style="margin-bottom:16px;">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Упражнения <span class="badge" id="prog-ex-count">0</span></div>
+      <div class="label">Упражнения <span class="badge" id="prog-ex-count">0</span></div>
       <div id="prog-ex-list" style="margin-bottom:10px;max-height:200px;overflow-y:auto;"></div>
       <button class="btn btn-ghost btn-sm" onclick="openPickExerciseModal('program')">+ Добавить упражнение</button>
     </div>
@@ -223,11 +260,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
     <div class="modal-handle"></div>
     <div class="modal-title">Упражнения</div>
     <input class="input" placeholder="Поиск…" id="exlib-search" oninput="renderExLibModal()" style="margin-bottom:12px;">
-    <div id="exlib-modal-list" style="max-height:260px;overflow-y:auto;margin-bottom:14px;"></div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:8px;font-weight:600;">Создать новое:</div>
-    <input class="input" id="new-ex-name" placeholder="Название упражнения" style="margin-bottom:10px;">
-    <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Категория:</div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;" id="cat-picker"></div>
+    <div id="exlib-modal-list" style="max-height:240px;overflow-y:auto;margin-bottom:14px;"></div>
+    <div class="label" style="font-weight:600;">Создать новое:</div>
+    <input class="input" id="new-ex-name" placeholder="Название упражнения" style="margin-bottom:10px;margin-top:6px;">
+    <div class="label">Категория:</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;margin-top:6px;" id="cat-picker"></div>
     <input type="hidden" id="new-ex-cat" value="Другое">
     <div style="display:flex;gap:8px;">
       <button class="btn btn-primary" onclick="createExercise()" style="flex:1">Создать</button>
@@ -244,7 +281,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
     <div class="modal-title">Выбрать упражнение</div>
     <input class="input" placeholder="Поиск…" id="pick-ex-search" oninput="renderPickExModal()" style="margin-bottom:10px;">
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;overflow-x:auto;padding-bottom:4px;" id="pick-ex-cats"></div>
-    <div id="pick-ex-list" style="max-height:380px;overflow-y:auto;"></div>
+    <div id="pick-ex-list" style="max-height:360px;overflow-y:auto;"></div>
     <div style="height:12px;"></div>
     <button class="btn btn-ghost" onclick="closeModal('modal-pick-ex')">Закрыть</button>
   </div>
@@ -260,6 +297,31 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
       <button class="btn btn-sm btn-danger" onclick="deleteWorkoutFromDetail()">Удалить</button>
       <button class="btn btn-ghost" onclick="closeModal('modal-hist-detail')" style="flex:1">Закрыть</button>
     </div>
+  </div>
+</div>
+
+<!-- MODAL: Export/Import -->
+
+<div class="modal-overlay" id="modal-export">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">💾 Резервная копия</div>
+    <div style="background:var(--s2);border-radius:12px;padding:14px;margin-bottom:16px;font-size:13px;color:var(--muted);line-height:1.6;">
+      Данные хранятся в браузере. Экспортируй файл — он сохранит все твои тренировки. При необходимости импортируй его обратно.
+    </div>
+    <div style="margin-bottom:10px;">
+      <button class="btn btn-primary" onclick="exportData()" style="margin-bottom:8px;">📤 Экспорт — скачать файл</button>
+      <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:14px;">Сохранит файл gains-backup.json</div>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:10px;">
+      <div class="label" style="margin-bottom:8px;">📥 Импорт — восстановить из файла:</div>
+      <label style="display:block;width:100%;padding:14px;border:2px dashed var(--border);border-radius:12px;text-align:center;cursor:pointer;font-size:14px;color:var(--muted);">
+        Выбрать файл gains-backup.json
+        <input type="file" accept=".json" id="import-file" style="display:none;" onchange="importData(this)">
+      </label>
+      <div style="font-size:11px;color:var(--danger);margin-top:6px;">⚠️ Импорт заменит все текущие данные</div>
+    </div>
+    <button class="btn btn-ghost" onclick="closeModal('modal-export')">Закрыть</button>
   </div>
 </div>
 
@@ -307,6 +369,53 @@ function load(){
   }
 }
 
+// ---- EXPORT / IMPORT ----
+function openExportModal(){openModal('modal-export');}
+
+function exportData(){
+  const json=JSON.stringify(state,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  const d=new Date();
+  a.download=`gains-backup-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  // Save last export date
+  localStorage.setItem('gains_last_export', Date.now().toString());
+  showToast('✅ Файл сохранён!');
+  updateExportReminder();
+}
+
+function importData(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=(e)=>{
+    try{
+      const parsed=JSON.parse(e.target.result);
+      if(!parsed.exercises||!parsed.programs||!parsed.workouts){showToast('❌ Неверный формат файла');return;}
+      if(!confirm(`Импортировать данные? Это заменит ${state.workouts.length} тренировок.`))return;
+      state={exercises:[],programs:[],workouts:[],...parsed};
+      save();
+      closeModal('modal-export');
+      renderHome();
+      showToast('✅ Данные восстановлены!');
+    }catch(err){showToast('❌ Ошибка чтения файла');}
+  };
+  reader.readAsText(file);
+}
+
+function updateExportReminder(){
+  const lastExport=localStorage.getItem('gains_last_export');
+  const banner=document.getElementById('export-reminder');
+  if(!banner)return;
+  // Show if never exported, or last export > 7 days ago
+  const shouldShow=!lastExport||(Date.now()-parseInt(lastExport))>7*86400000;
+  banner.style.display=shouldShow&&state.workouts.length>0?'block':'none';
+}
+
+// ---- UTILS ----
 function formatDate(ts){
   const d=new Date(ts);
   const days=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
@@ -314,7 +423,7 @@ function formatDate(ts){
   return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 function formatTime(sec){return `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;}
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function openModal(id){const el=document.getElementById(id);el.classList.add('open');el.onclick=(e)=>{if(e.target===el)closeModal(id);};}
 function getEx(id){return state.exercises.find(e=>e.id===id);}
@@ -334,6 +443,7 @@ function switchTab(tab){
 // ---- HOME ----
 function renderHome(){
   document.getElementById('home-date').textContent=formatDate(Date.now());
+  updateExportReminder();
   const pl=document.getElementById('home-programs-list');
   pl.innerHTML=state.programs.slice(0,4).map(p=>`
     <div class="prog-card" onclick="startWorkoutWithProgram('${p.id}')">
@@ -552,10 +662,16 @@ function openStartWorkoutModal(){
   openModal('modal-start');
 }
 
+function getLastWorkoutForExercise(exId,beforeDate){
+  return state.workouts
+    .filter(w=>w.date<(beforeDate||Date.now())&&w.exercises.some(e=>e.exerciseId===exId))
+    .sort((a,b)=>b.date-a.date)[0]||null;
+}
+
 function getLastSetsForExercise(exId,beforeDate){
-  const wk=state.workouts.filter(w=>w.date<(beforeDate||Date.now())&&w.exercises.some(e=>e.exerciseId===exId)).sort((a,b)=>b.date-a.date)[0];
+  const wk=getLastWorkoutForExercise(exId,beforeDate);
   if(!wk)return null;
-  return wk.exercises.find(e=>e.exerciseId===exId)?.sets||null;
+  return wk.exercises.find(e=>e.exerciseId===exId)||null;
 }
 
 function startWorkoutWithProgram(programId){
@@ -564,11 +680,13 @@ function startWorkoutWithProgram(programId){
   const now=Date.now();
   const exercises=prog.exerciseIds.map(exId=>{
     const ex=getEx(exId)||{id:exId,name:'?',category:''};
-    const prevSets=getLastSetsForExercise(exId,now);
+    const prevExData=getLastSetsForExercise(exId,now);
+    const prevSets=prevExData?.sets||null;
+    const prevNote=prevExData?.note||'';
     const sets=prevSets
       ?prevSets.map(s=>({reps:'',weight:'',done:false,prevReps:s.reps,prevWeight:s.weight}))
       :[{reps:'',weight:'',done:false,prevReps:null,prevWeight:null},{reps:'',weight:'',done:false,prevReps:null,prevWeight:null},{reps:'',weight:'',done:false,prevReps:null,prevWeight:null}];
-    return{exerciseId:exId,name:ex.name,sets,prevSets};
+    return{exerciseId:exId,name:ex.name,sets,prevSets,prevNote,note:''};
   });
   beginActiveWorkout({programId,programName:prog.name,exercises,startTime:now});
 }
@@ -594,15 +712,17 @@ function renderActiveWorkout(){
 
 function renderExBlock(ei){
   const ex=activeWorkout.exercises[ei];
-  const prevSummary=ex.prevSets?ex.prevSets.map(s=>`${s.reps}п × ${s.weight}кг`).join('  '):'первый раз';
+  const prevSummary=ex.prevSets?ex.prevSets.map(s=>`${s.reps}п×${s.weight}кг`).join('  '):'первый раз';
+  const prevNoteHtml=ex.prevNote?`<div style="font-size:11px;color:var(--orange);margin-top:2px;">📝 ${ex.prevNote}</div>`:'';
   return `
     <div class="ex-block" id="ex-block-${ei}">
       <div class="ex-block-head">
-        <div>
+        <div style="flex:1;min-width:0;">
           <div class="ex-block-name">${ex.name}</div>
           <div class="ex-block-prev">🕐 ${prevSummary}</div>
+          ${prevNoteHtml}
         </div>
-        <div onclick="removeExFromWorkout(${ei})" style="width:28px;height:28px;border-radius:50%;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:var(--muted);">✕</div>
+        <div onclick="removeExFromWorkout(${ei})" style="width:28px;height:28px;border-radius:50%;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:var(--muted);flex-shrink:0;margin-left:8px;">✕</div>
       </div>
       <div class="sets-table">
         <div class="sets-row sets-head"><div></div><div>Повторы</div><div>Вес кг</div><div></div></div>
@@ -619,131 +739,127 @@ function renderExBlock(ei){
           </div>`).join('')}
       </div>
       <button class="add-set-btn" onclick="addSetToEx(${ei})">+ Подход</button>
-    </div>`;
+      <div class="note-row">
+        <textarea class="note-input" id="note-${ei}" placeholder="📝 Заметка к упражнению (ощущения, техника, планы…)" onchange="updateNote(${ei},this.value)">${ex.note||''}</textarea>
+
+```
+  </div>
+</div>`;
+```
+
 }
 
 function updateSet(ei,si,field,val){if(!activeWorkout)return;activeWorkout.exercises[ei].sets[si][field]=val;}
+function updateNote(ei,val){if(!activeWorkout)return;activeWorkout.exercises[ei].note=val;}
 
 function toggleSet(ei,si){
-  if(!activeWorkout)return;
-  const s=activeWorkout.exercises[ei].sets[si];
-  const ri=document.getElementById(`si-r-${ei}-${si}`);
-  const wi=document.getElementById(`si-w-${ei}-${si}`);
-  // auto-fill from placeholder
-  if(!s.reps&&ri.placeholder&&ri.placeholder!=='—'){s.reps=ri.placeholder;ri.value=s.reps;}
-  if(!s.weight&&wi.placeholder&&wi.placeholder!=='—'){s.weight=wi.placeholder;wi.value=s.weight;}
-  s.done=!s.done;
-  document.getElementById(`sn-${ei}-${si}`).className=`set-n ${s.done?'done':''}`;
-  document.getElementById(`cs-${ei}-${si}`).className=`check-set ${s.done?'done':''}`;
+if(!activeWorkout)return;
+const s=activeWorkout.exercises[ei].sets[si];
+const ri=document.getElementById(`si-r-${ei}-${si}`);
+const wi=document.getElementById(`si-w-${ei}-${si}`);
+if(!s.reps&&ri.placeholder&&ri.placeholder!==’—’){s.reps=ri.placeholder;ri.value=s.reps;}
+if(!s.weight&&wi.placeholder&&wi.placeholder!==’—’){s.weight=wi.placeholder;wi.value=s.weight;}
+s.done=!s.done;
+document.getElementById(`sn-${ei}-${si}`).className=`set-n ${s.done?'done':''}`;
+document.getElementById(`cs-${ei}-${si}`).className=`check-set ${s.done?'done':''}`;
 }
 
 function addSetToEx(ei){
-  if(!activeWorkout)return;
-  const ex=activeWorkout.exercises[ei];
-  const lastSet=ex.sets[ex.sets.length-1];
-  ex.sets.push({reps:'',weight:'',done:false,prevReps:lastSet?.prevReps||null,prevWeight:lastSet?.prevWeight||null});
-  const old=document.getElementById(`ex-block-${ei}`);
-  old.outerHTML=renderExBlock(ei);
+if(!activeWorkout)return;
+const ex=activeWorkout.exercises[ei];
+// Save current note before re-render
+const noteEl=document.getElementById(`note-${ei}`);
+if(noteEl)ex.note=noteEl.value;
+const lastSet=ex.sets[ex.sets.length-1];
+ex.sets.push({reps:’’,weight:’’,done:false,prevReps:lastSet?.prevReps||null,prevWeight:lastSet?.prevWeight||null});
+const old=document.getElementById(`ex-block-${ei}`);
+old.outerHTML=renderExBlock(ei);
 }
 
 function removeExFromWorkout(ei){if(!activeWorkout)return;activeWorkout.exercises.splice(ei,1);renderActiveWorkout();}
-function addExToWorkout(){openPickExerciseModal('workout');}
+function addExToWorkout(){openPickExerciseModal(‘workout’);}
 
 function addExerciseToActiveWorkout(exId){
-  if(!activeWorkout)return;
-  const ex=getEx(exId)||{id:exId,name:'?',category:''};
-  const prevSets=getLastSetsForExercise(exId,Date.now());
-  const sets=prevSets?prevSets.map(s=>({reps:'',weight:'',done:false,prevReps:s.reps,prevWeight:s.weight})):[{reps:'',weight:'',done:false},{reps:'',weight:'',done:false},{reps:'',weight:'',done:false}];
-  activeWorkout.exercises.push({exerciseId:exId,name:ex.name,sets,prevSets});
-  renderActiveWorkout();
-  // Scroll to bottom
-  const container=document.getElementById('aw-exercises');
-  container.scrollTop=container.scrollHeight;
-  showToast(`+ ${ex.name}`);
+if(!activeWorkout)return;
+const ex=getEx(exId)||{id:exId,name:’?’,category:’’};
+const prevExData=getLastSetsForExercise(exId,Date.now());
+const prevSets=prevExData?.sets||null;
+const prevNote=prevExData?.note||’’;
+const sets=prevSets?prevSets.map(s=>({reps:’’,weight:’’,done:false,prevReps:s.reps,prevWeight:s.weight})):[{reps:’’,weight:’’,done:false},{reps:’’,weight:’’,done:false},{reps:’’,weight:’’,done:false}];
+activeWorkout.exercises.push({exerciseId:exId,name:ex.name,sets,prevSets,prevNote,note:’’});
+renderActiveWorkout();
+const container=document.getElementById(‘aw-exercises’);
+container.scrollTop=container.scrollHeight;
+showToast(`+ ${ex.name}`);
 }
 
 function finishWorkout(){
-  if(!activeWorkout)return;
-  clearInterval(activeWorkout.timerInterval);
-  const wk={
-    id:uid(),programId:activeWorkout.programId,programName:activeWorkout.programName,
-    date:activeWorkout.startTime,duration:activeWorkout.duration||0,
-    exercises:activeWorkout.exercises.map(e=>({
-      exerciseId:e.exerciseId,name:e.name,
-      sets:e.sets.map(s=>({reps:s.reps||s.prevReps||0,weight:s.weight||s.prevWeight||0,done:s.done}))
-    }))
-  };
-  state.workouts.push(wk);save();
-  activeWorkout=null;exitWorkoutScreen();
-  showToast('🎉 Тренировка сохранена!');
+if(!activeWorkout)return;
+// Save all notes from DOM before finishing
+activeWorkout.exercises.forEach((ex,ei)=>{
+const noteEl=document.getElementById(`note-${ei}`);
+if(noteEl)ex.note=noteEl.value;
+});
+clearInterval(activeWorkout.timerInterval);
+const wk={
+id:uid(),programId:activeWorkout.programId,programName:activeWorkout.programName,
+date:activeWorkout.startTime,duration:activeWorkout.duration||0,
+exercises:activeWorkout.exercises.map(e=>({
+exerciseId:e.exerciseId,name:e.name,note:e.note||’’,
+sets:e.sets.map(s=>({reps:s.reps||s.prevReps||0,weight:s.weight||s.prevWeight||0,done:s.done}))
+}))
+};
+state.workouts.push(wk);save();
+activeWorkout=null;exitWorkoutScreen();
+showToast(‘🎉 Тренировка сохранена!’);
 }
 
 function cancelWorkout(){
-  if(!confirm('Отменить тренировку? Данные не сохранятся.'))return;
-  clearInterval(activeWorkout?.timerInterval);
-  activeWorkout=null;exitWorkoutScreen();
+if(!confirm(‘Отменить тренировку? Данные не сохранятся.’))return;
+clearInterval(activeWorkout?.timerInterval);
+activeWorkout=null;exitWorkoutScreen();
 }
 
 function exitWorkoutScreen(){
-  document.getElementById('screen-workout').classList.remove('active');
-  document.getElementById('main-nav').style.display='flex';
-  switchTab('home');
+document.getElementById(‘screen-workout’).classList.remove(‘active’);
+document.getElementById(‘main-nav’).style.display=‘flex’;
+switchTab(‘home’);
 }
 
-// ---- HISTORY ----
+// –– HISTORY ––
 function renderHistory(){
-  const list=document.getElementById('history-list');
-  if(!state.workouts.length){list.innerHTML=`<div class="empty-state"><div class="icon">📭</div><p>История пуста.<br>Проведи первую тренировку!</p></div>`;return;}
-  const sorted=state.workouts.slice().sort((a,b)=>b.date-a.date);
-  const groups={};
-  sorted.forEach(w=>{const d=new Date(w.date);const key=`${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}`;if(!groups[key])groups[key]=[];groups[key].push(w);});
-  const months=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  list.innerHTML=Object.entries(groups).sort((a,b)=>b[0].localeCompare(a[0])).map(([key,wks])=>{
-    const[y,m]=key.split('-');
-    return`<div class="hist-date">${months[+m]} ${y}</div>`+
-      wks.map(w=>`
-        <div class="hist-card" onclick="showHistDetail('${w.id}')">
-          <div class="hist-card-top"><div class="hist-card-name">${w.programName||'Свободная'}</div><div class="hist-card-time">${formatDate(w.date)}</div></div>
-          <div class="hist-card-exercises">${w.exercises.map(e=>e.name).join(', ')}</div>
-          <div class="hist-card-stats">
-            <div class="hist-stat"><span>${w.exercises.length}</span> упр</div>
-            <div class="hist-stat"><span>${w.exercises.reduce((s,e)=>s+e.sets.filter(x=>x.done).length,0)}</span> подх</div>
-            <div class="hist-stat"><span>${formatTime(w.duration||0)}</span></div>
-          </div>
-        </div>`).join('');
-  }).join('');
+const list=document.getElementById(‘history-list’);
+if(!state.workouts.length){list.innerHTML=`<div class="empty-state"><div class="icon">📭</div><p>История пуста.<br>Проведи первую тренировку!</p></div>`;return;}
+const sorted=state.workouts.slice().sort((a,b)=>b.date-a.date);
+const groups={};
+sorted.forEach(w=>{const d=new Date(w.date);const key=`${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}`;if(!groups[key])groups[key]=[];groups[key].push(w);});
+const months=[‘Январь’,‘Февраль’,‘Март’,‘Апрель’,‘Май’,‘Июнь’,‘Июль’,‘Август’,‘Сентябрь’,‘Октябрь’,‘Ноябрь’,‘Декабрь’];
+list.innerHTML=Object.entries(groups).sort((a,b)=>b[0].localeCompare(a[0])).map(([key,wks])=>{
+const[y,m]=key.split(’-’);
+return`<div class="hist-date">${months[+m]} ${y}</div>`+
+wks.map(w=>` <div class="hist-card" onclick="showHistDetail('${w.id}')"> <div class="hist-card-top"><div class="hist-card-name">${w.programName||'Свободная'}</div><div class="hist-card-time">${formatDate(w.date)}</div></div> <div class="hist-card-exercises">${w.exercises.map(e=>e.name).join(', ')}</div> <div class="hist-card-stats"> <div class="hist-stat"><span>${w.exercises.length}</span> упр</div> <div class="hist-stat"><span>${w.exercises.reduce((s,e)=>s+e.sets.filter(x=>x.done).length,0)}</span> подх</div> <div class="hist-stat"><span>${formatTime(w.duration||0)}</span></div> </div> </div>`).join(’’);
+}).join(’’);
 }
 
 function showHistDetail(id){
-  const w=state.workouts.find(x=>x.id===id);if(!w)return;
-  currentHistDetailId=id;
-  document.getElementById('hist-detail-content').innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;">${w.programName||'Свободная'}</div>
-      <div class="badge">${formatTime(w.duration||0)}</div>
-    </div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">${formatDate(w.date)}</div>
-    ${w.exercises.map(e=>`
-      <div style="margin-bottom:14px;">
-        <div style="font-weight:600;font-size:14px;margin-bottom:6px;color:var(--accent);">${e.name}</div>
-        ${e.sets.map((s,i)=>`
-          <div style="display:flex;gap:16px;margin-bottom:5px;font-size:13px;color:${s.done?'var(--text)':'var(--muted)'};">
-            <span style="color:var(--muted);min-width:60px;">Подход ${i+1}</span>
-            <span>${s.reps} повт</span>
-            <span>${s.weight} кг</span>
-            ${s.done?'<span style="color:var(--green);">✓</span>':'<span style="color:var(--muted);">—</span>'}
-          </div>`).join('')}
-      </div>`).join('')}`;
-  openModal('modal-hist-detail');
+const w=state.workouts.find(x=>x.id===id);if(!w)return;
+currentHistDetailId=id;
+document.getElementById(‘hist-detail-content’).innerHTML=` <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"> <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;">${w.programName||'Свободная'}</div> <div class="badge">${formatTime(w.duration||0)}</div> </div> <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">${formatDate(w.date)}</div> ${w.exercises.map(e=>`
+<div style="margin-bottom:16px;background:var(--s2);border-radius:12px;padding:12px 14px;">
+<div style="font-weight:600;font-size:14px;margin-bottom:8px;color:var(--accent);">${e.name}</div>
+${e.sets.map((s,i)=>` <div style="display:flex;gap:16px;margin-bottom:5px;font-size:13px;color:${s.done?'var(--text)':'var(--muted)'};"> <span style="color:var(--muted);min-width:60px;">Подход ${i+1}</span> <span>${s.reps} повт</span> <span>${s.weight} кг</span> ${s.done?'<span style="color:var(--green);">✓</span>':'<span style="color:var(--muted);">—</span>'} </div>`).join(’’)}
+${e.note?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:12px;color:var(--orange);">📝 ${e.note}</div>`:’’}
+</div>`).join('')}`;
+openModal(‘modal-hist-detail’);
 }
 
 function deleteWorkoutFromDetail(){
-  if(!currentHistDetailId||!confirm('Удалить тренировку?'))return;
-  state.workouts=state.workouts.filter(w=>w.id!==currentHistDetailId);
-  save();closeModal('modal-hist-detail');renderHistory();renderHome();showToast('Удалено');
+if(!currentHistDetailId||!confirm(‘Удалить тренировку?’))return;
+state.workouts=state.workouts.filter(w=>w.id!==currentHistDetailId);
+save();closeModal(‘modal-hist-detail’);renderHistory();renderHome();showToast(‘Удалено’);
 }
 
-// ---- INIT ----
+// –– INIT ––
 load();
 renderHome();
 </script>
