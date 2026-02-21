@@ -1,5 +1,5 @@
-<!DOCTYPE html>
 
+<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
@@ -127,7 +127,6 @@ textarea.input{resize:none;min-height:64px;line-height:1.5;}
 <div id="app">
 
 <!-- HOME -->
-
 <div class="screen active" id="screen-home">
   <div class="topbar">
     <div><div class="topbar-title">GAINS</div><div class="topbar-sub" id="home-date"></div></div>
@@ -161,7 +160,6 @@ textarea.input{resize:none;min-height:64px;line-height:1.5;}
 </div>
 
 <!-- ACTIVE WORKOUT -->
-
 <div class="screen" id="screen-workout" style="padding:0;">
   <div class="workout-topbar">
     <div class="workout-info">
@@ -180,14 +178,12 @@ textarea.input{resize:none;min-height:64px;line-height:1.5;}
 </div>
 
 <!-- HISTORY -->
-
 <div class="screen" id="screen-history">
   <div class="topbar"><div><div class="topbar-title">История</div><div class="topbar-sub">Все тренировки</div></div></div>
   <div id="history-list"></div>
 </div>
 
 <!-- PROGRAMS -->
-
 <div class="screen" id="screen-programs">
   <div class="topbar">
     <div><div class="topbar-title">Программы</div><div class="topbar-sub">Твои сеты упражнений</div></div>
@@ -200,7 +196,6 @@ textarea.input{resize:none;min-height:64px;line-height:1.5;}
 </div>
 
 <!-- NAV -->
-
 <nav class="nav" id="main-nav">
   <button class="nav-btn active" onclick="switchTab('home')" id="nav-home">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Главная
@@ -215,7 +210,6 @@ textarea.input{resize:none;min-height:64px;line-height:1.5;}
 </div>
 
 <!-- MODAL: Start -->
-
 <div class="modal-overlay" id="modal-start">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -227,7 +221,6 @@ textarea.input{resize:none;min-height:64px;line-height:1.5;}
 </div>
 
 <!-- MODAL: New/Edit Program -->
-
 <div class="modal-overlay" id="modal-new-program">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -254,7 +247,6 @@ textarea.input{resize:none;min-height:64px;line-height:1.5;}
 </div>
 
 <!-- MODAL: Exercise Library -->
-
 <div class="modal-overlay" id="modal-exlib">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -274,7 +266,6 @@ textarea.input{resize:none;min-height:64px;line-height:1.5;}
 </div>
 
 <!-- MODAL: Pick Exercise -->
-
 <div class="modal-overlay" id="modal-pick-ex">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -288,7 +279,6 @@ textarea.input{resize:none;min-height:64px;line-height:1.5;}
 </div>
 
 <!-- MODAL: History Detail -->
-
 <div class="modal-overlay" id="modal-hist-detail">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -301,7 +291,6 @@ textarea.input{resize:none;min-height:64px;line-height:1.5;}
 </div>
 
 <!-- MODAL: Export/Import -->
-
 <div class="modal-overlay" id="modal-export">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -741,128 +730,144 @@ function renderExBlock(ei){
       <button class="add-set-btn" onclick="addSetToEx(${ei})">+ Подход</button>
       <div class="note-row">
         <textarea class="note-input" id="note-${ei}" placeholder="📝 Заметка к упражнению (ощущения, техника, планы…)" onchange="updateNote(${ei},this.value)">${ex.note||''}</textarea>
-
-```
-  </div>
-</div>`;
-```
-
+      </div>
+    </div>`;
 }
 
 function updateSet(ei,si,field,val){if(!activeWorkout)return;activeWorkout.exercises[ei].sets[si][field]=val;}
 function updateNote(ei,val){if(!activeWorkout)return;activeWorkout.exercises[ei].note=val;}
 
 function toggleSet(ei,si){
-if(!activeWorkout)return;
-const s=activeWorkout.exercises[ei].sets[si];
-const ri=document.getElementById(`si-r-${ei}-${si}`);
-const wi=document.getElementById(`si-w-${ei}-${si}`);
-if(!s.reps&&ri.placeholder&&ri.placeholder!==’—’){s.reps=ri.placeholder;ri.value=s.reps;}
-if(!s.weight&&wi.placeholder&&wi.placeholder!==’—’){s.weight=wi.placeholder;wi.value=s.weight;}
-s.done=!s.done;
-document.getElementById(`sn-${ei}-${si}`).className=`set-n ${s.done?'done':''}`;
-document.getElementById(`cs-${ei}-${si}`).className=`check-set ${s.done?'done':''}`;
+  if(!activeWorkout)return;
+  const s=activeWorkout.exercises[ei].sets[si];
+  const ri=document.getElementById(`si-r-${ei}-${si}`);
+  const wi=document.getElementById(`si-w-${ei}-${si}`);
+  if(!s.reps&&ri.placeholder&&ri.placeholder!=='—'){s.reps=ri.placeholder;ri.value=s.reps;}
+  if(!s.weight&&wi.placeholder&&wi.placeholder!=='—'){s.weight=wi.placeholder;wi.value=s.weight;}
+  s.done=!s.done;
+  document.getElementById(`sn-${ei}-${si}`).className=`set-n ${s.done?'done':''}`;
+  document.getElementById(`cs-${ei}-${si}`).className=`check-set ${s.done?'done':''}`;
 }
 
 function addSetToEx(ei){
-if(!activeWorkout)return;
-const ex=activeWorkout.exercises[ei];
-// Save current note before re-render
-const noteEl=document.getElementById(`note-${ei}`);
-if(noteEl)ex.note=noteEl.value;
-const lastSet=ex.sets[ex.sets.length-1];
-ex.sets.push({reps:’’,weight:’’,done:false,prevReps:lastSet?.prevReps||null,prevWeight:lastSet?.prevWeight||null});
-const old=document.getElementById(`ex-block-${ei}`);
-old.outerHTML=renderExBlock(ei);
+  if(!activeWorkout)return;
+  const ex=activeWorkout.exercises[ei];
+  // Save current note before re-render
+  const noteEl=document.getElementById(`note-${ei}`);
+  if(noteEl)ex.note=noteEl.value;
+  const lastSet=ex.sets[ex.sets.length-1];
+  ex.sets.push({reps:'',weight:'',done:false,prevReps:lastSet?.prevReps||null,prevWeight:lastSet?.prevWeight||null});
+  const old=document.getElementById(`ex-block-${ei}`);
+  old.outerHTML=renderExBlock(ei);
 }
 
 function removeExFromWorkout(ei){if(!activeWorkout)return;activeWorkout.exercises.splice(ei,1);renderActiveWorkout();}
-function addExToWorkout(){openPickExerciseModal(‘workout’);}
+function addExToWorkout(){openPickExerciseModal('workout');}
 
 function addExerciseToActiveWorkout(exId){
-if(!activeWorkout)return;
-const ex=getEx(exId)||{id:exId,name:’?’,category:’’};
-const prevExData=getLastSetsForExercise(exId,Date.now());
-const prevSets=prevExData?.sets||null;
-const prevNote=prevExData?.note||’’;
-const sets=prevSets?prevSets.map(s=>({reps:’’,weight:’’,done:false,prevReps:s.reps,prevWeight:s.weight})):[{reps:’’,weight:’’,done:false},{reps:’’,weight:’’,done:false},{reps:’’,weight:’’,done:false}];
-activeWorkout.exercises.push({exerciseId:exId,name:ex.name,sets,prevSets,prevNote,note:’’});
-renderActiveWorkout();
-const container=document.getElementById(‘aw-exercises’);
-container.scrollTop=container.scrollHeight;
-showToast(`+ ${ex.name}`);
+  if(!activeWorkout)return;
+  const ex=getEx(exId)||{id:exId,name:'?',category:''};
+  const prevExData=getLastSetsForExercise(exId,Date.now());
+  const prevSets=prevExData?.sets||null;
+  const prevNote=prevExData?.note||'';
+  const sets=prevSets?prevSets.map(s=>({reps:'',weight:'',done:false,prevReps:s.reps,prevWeight:s.weight})):[{reps:'',weight:'',done:false},{reps:'',weight:'',done:false},{reps:'',weight:'',done:false}];
+  activeWorkout.exercises.push({exerciseId:exId,name:ex.name,sets,prevSets,prevNote,note:''});
+  renderActiveWorkout();
+  const container=document.getElementById('aw-exercises');
+  container.scrollTop=container.scrollHeight;
+  showToast(`+ ${ex.name}`);
 }
 
 function finishWorkout(){
-if(!activeWorkout)return;
-// Save all notes from DOM before finishing
-activeWorkout.exercises.forEach((ex,ei)=>{
-const noteEl=document.getElementById(`note-${ei}`);
-if(noteEl)ex.note=noteEl.value;
-});
-clearInterval(activeWorkout.timerInterval);
-const wk={
-id:uid(),programId:activeWorkout.programId,programName:activeWorkout.programName,
-date:activeWorkout.startTime,duration:activeWorkout.duration||0,
-exercises:activeWorkout.exercises.map(e=>({
-exerciseId:e.exerciseId,name:e.name,note:e.note||’’,
-sets:e.sets.map(s=>({reps:s.reps||s.prevReps||0,weight:s.weight||s.prevWeight||0,done:s.done}))
-}))
-};
-state.workouts.push(wk);save();
-activeWorkout=null;exitWorkoutScreen();
-showToast(‘🎉 Тренировка сохранена!’);
+  if(!activeWorkout)return;
+  // Save all notes from DOM before finishing
+  activeWorkout.exercises.forEach((ex,ei)=>{
+    const noteEl=document.getElementById(`note-${ei}`);
+    if(noteEl)ex.note=noteEl.value;
+  });
+  clearInterval(activeWorkout.timerInterval);
+  const wk={
+    id:uid(),programId:activeWorkout.programId,programName:activeWorkout.programName,
+    date:activeWorkout.startTime,duration:activeWorkout.duration||0,
+    exercises:activeWorkout.exercises.map(e=>({
+      exerciseId:e.exerciseId,name:e.name,note:e.note||'',
+      sets:e.sets.map(s=>({reps:s.reps||s.prevReps||0,weight:s.weight||s.prevWeight||0,done:s.done}))
+    }))
+  };
+  state.workouts.push(wk);save();
+  activeWorkout=null;exitWorkoutScreen();
+  showToast('🎉 Тренировка сохранена!');
 }
 
 function cancelWorkout(){
-if(!confirm(‘Отменить тренировку? Данные не сохранятся.’))return;
-clearInterval(activeWorkout?.timerInterval);
-activeWorkout=null;exitWorkoutScreen();
+  if(!confirm('Отменить тренировку? Данные не сохранятся.'))return;
+  clearInterval(activeWorkout?.timerInterval);
+  activeWorkout=null;exitWorkoutScreen();
 }
 
 function exitWorkoutScreen(){
-document.getElementById(‘screen-workout’).classList.remove(‘active’);
-document.getElementById(‘main-nav’).style.display=‘flex’;
-switchTab(‘home’);
+  document.getElementById('screen-workout').classList.remove('active');
+  document.getElementById('main-nav').style.display='flex';
+  switchTab('home');
 }
 
-// –– HISTORY ––
+// ---- HISTORY ----
 function renderHistory(){
-const list=document.getElementById(‘history-list’);
-if(!state.workouts.length){list.innerHTML=`<div class="empty-state"><div class="icon">📭</div><p>История пуста.<br>Проведи первую тренировку!</p></div>`;return;}
-const sorted=state.workouts.slice().sort((a,b)=>b.date-a.date);
-const groups={};
-sorted.forEach(w=>{const d=new Date(w.date);const key=`${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}`;if(!groups[key])groups[key]=[];groups[key].push(w);});
-const months=[‘Январь’,‘Февраль’,‘Март’,‘Апрель’,‘Май’,‘Июнь’,‘Июль’,‘Август’,‘Сентябрь’,‘Октябрь’,‘Ноябрь’,‘Декабрь’];
-list.innerHTML=Object.entries(groups).sort((a,b)=>b[0].localeCompare(a[0])).map(([key,wks])=>{
-const[y,m]=key.split(’-’);
-return`<div class="hist-date">${months[+m]} ${y}</div>`+
-wks.map(w=>` <div class="hist-card" onclick="showHistDetail('${w.id}')"> <div class="hist-card-top"><div class="hist-card-name">${w.programName||'Свободная'}</div><div class="hist-card-time">${formatDate(w.date)}</div></div> <div class="hist-card-exercises">${w.exercises.map(e=>e.name).join(', ')}</div> <div class="hist-card-stats"> <div class="hist-stat"><span>${w.exercises.length}</span> упр</div> <div class="hist-stat"><span>${w.exercises.reduce((s,e)=>s+e.sets.filter(x=>x.done).length,0)}</span> подх</div> <div class="hist-stat"><span>${formatTime(w.duration||0)}</span></div> </div> </div>`).join(’’);
-}).join(’’);
+  const list=document.getElementById('history-list');
+  if(!state.workouts.length){list.innerHTML=`<div class="empty-state"><div class="icon">📭</div><p>История пуста.<br>Проведи первую тренировку!</p></div>`;return;}
+  const sorted=state.workouts.slice().sort((a,b)=>b.date-a.date);
+  const groups={};
+  sorted.forEach(w=>{const d=new Date(w.date);const key=`${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}`;if(!groups[key])groups[key]=[];groups[key].push(w);});
+  const months=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  list.innerHTML=Object.entries(groups).sort((a,b)=>b[0].localeCompare(a[0])).map(([key,wks])=>{
+    const[y,m]=key.split('-');
+    return`<div class="hist-date">${months[+m]} ${y}</div>`+
+      wks.map(w=>`
+        <div class="hist-card" onclick="showHistDetail('${w.id}')">
+          <div class="hist-card-top"><div class="hist-card-name">${w.programName||'Свободная'}</div><div class="hist-card-time">${formatDate(w.date)}</div></div>
+          <div class="hist-card-exercises">${w.exercises.map(e=>e.name).join(', ')}</div>
+          <div class="hist-card-stats">
+            <div class="hist-stat"><span>${w.exercises.length}</span> упр</div>
+            <div class="hist-stat"><span>${w.exercises.reduce((s,e)=>s+e.sets.filter(x=>x.done).length,0)}</span> подх</div>
+            <div class="hist-stat"><span>${formatTime(w.duration||0)}</span></div>
+          </div>
+        </div>`).join('');
+  }).join('');
 }
 
 function showHistDetail(id){
-const w=state.workouts.find(x=>x.id===id);if(!w)return;
-currentHistDetailId=id;
-document.getElementById(‘hist-detail-content’).innerHTML=` <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"> <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;">${w.programName||'Свободная'}</div> <div class="badge">${formatTime(w.duration||0)}</div> </div> <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">${formatDate(w.date)}</div> ${w.exercises.map(e=>`
-<div style="margin-bottom:16px;background:var(--s2);border-radius:12px;padding:12px 14px;">
-<div style="font-weight:600;font-size:14px;margin-bottom:8px;color:var(--accent);">${e.name}</div>
-${e.sets.map((s,i)=>` <div style="display:flex;gap:16px;margin-bottom:5px;font-size:13px;color:${s.done?'var(--text)':'var(--muted)'};"> <span style="color:var(--muted);min-width:60px;">Подход ${i+1}</span> <span>${s.reps} повт</span> <span>${s.weight} кг</span> ${s.done?'<span style="color:var(--green);">✓</span>':'<span style="color:var(--muted);">—</span>'} </div>`).join(’’)}
-${e.note?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:12px;color:var(--orange);">📝 ${e.note}</div>`:’’}
-</div>`).join('')}`;
-openModal(‘modal-hist-detail’);
+  const w=state.workouts.find(x=>x.id===id);if(!w)return;
+  currentHistDetailId=id;
+  document.getElementById('hist-detail-content').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;">${w.programName||'Свободная'}</div>
+      <div class="badge">${formatTime(w.duration||0)}</div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">${formatDate(w.date)}</div>
+    ${w.exercises.map(e=>`
+      <div style="margin-bottom:16px;background:var(--s2);border-radius:12px;padding:12px 14px;">
+        <div style="font-weight:600;font-size:14px;margin-bottom:8px;color:var(--accent);">${e.name}</div>
+        ${e.sets.map((s,i)=>`
+          <div style="display:flex;gap:16px;margin-bottom:5px;font-size:13px;color:${s.done?'var(--text)':'var(--muted)'};">
+            <span style="color:var(--muted);min-width:60px;">Подход ${i+1}</span>
+            <span>${s.reps} повт</span>
+            <span>${s.weight} кг</span>
+            ${s.done?'<span style="color:var(--green);">✓</span>':'<span style="color:var(--muted);">—</span>'}
+          </div>`).join('')}
+        ${e.note?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:12px;color:var(--orange);">📝 ${e.note}</div>`:''}
+      </div>`).join('')}`;
+  openModal('modal-hist-detail');
 }
 
 function deleteWorkoutFromDetail(){
-if(!currentHistDetailId||!confirm(‘Удалить тренировку?’))return;
-state.workouts=state.workouts.filter(w=>w.id!==currentHistDetailId);
-save();closeModal(‘modal-hist-detail’);renderHistory();renderHome();showToast(‘Удалено’);
+  if(!currentHistDetailId||!confirm('Удалить тренировку?'))return;
+  state.workouts=state.workouts.filter(w=>w.id!==currentHistDetailId);
+  save();closeModal('modal-hist-detail');renderHistory();renderHome();showToast('Удалено');
 }
 
-// –– INIT ––
+// ---- INIT ----
 load();
 renderHome();
 </script>
-
 </body>
 </html>
