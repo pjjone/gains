@@ -818,8 +818,12 @@ function startFreeWorkout(){closeModal('modal-start');beginActiveWorkout({progra
 
 function beginActiveWorkout(data){
   activeWorkout={...data,duration:0};
-  let elapsed=0;
-  activeWorkout.timerInterval=setInterval(()=>{elapsed++;document.getElementById('aw-timer').textContent=formatTime(elapsed);activeWorkout.duration=elapsed;},1000);
+  const workoutStartTime=data.startTime;
+  activeWorkout.timerInterval=setInterval(()=>{
+    const elapsed=Math.floor((Date.now()-workoutStartTime)/1000);
+    document.getElementById('aw-timer').textContent=formatTime(elapsed);
+    activeWorkout.duration=elapsed;
+  },1000);
   document.getElementById('aw-program-name').textContent=data.programName;
   document.getElementById('aw-timer').textContent='00:00';
   renderActiveWorkout();
@@ -859,6 +863,7 @@ function renderExBlock(ei){
               value="${s.weight}" placeholder="${s.prevWeight||'—'}"
               onchange="updateSet(${ei},${si},'weight',this.value)" min="0" step="0.5">
             <button class="check-set ${s.done?'done':''}" id="cs-${ei}-${si}" onclick="toggleSet(${ei},${si})">✓</button>
+            <button onclick="removeSetFromEx(${ei},${si})" style="background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:0 4px;line-height:1;" title="Удалить подход">✕</button>
           </div>`).join('')}
       </div>
       <button class="add-set-btn" onclick="addSetToEx(${ei})">+ Подход</button>
@@ -895,6 +900,17 @@ function addSetToEx(ei){
   old.outerHTML=renderExBlock(ei);
 }
 
+function removeSetFromEx(ei,si){
+  if(!activeWorkout)return;
+  const ex=activeWorkout.exercises[ei];
+  if(ex.sets.length<=1){showToast('Минимум 1 подход');return;}
+  const noteEl=document.getElementById(`note-${ei}`);
+  if(noteEl)ex.note=noteEl.value;
+  ex.sets.splice(si,1);
+  const old=document.getElementById(`ex-block-${ei}`);
+  old.outerHTML=renderExBlock(ei);
+}
+
 function removeExFromWorkout(ei){if(!activeWorkout)return;activeWorkout.exercises.splice(ei,1);renderActiveWorkout();}
 function addExToWorkout(){openPickExerciseModal('workout');}
 
@@ -925,7 +941,7 @@ function finishWorkout(){
     date:activeWorkout.startTime,duration:activeWorkout.duration||0,
     exercises:activeWorkout.exercises.map(e=>({
       exerciseId:e.exerciseId,name:e.name,note:e.note||'',
-      sets:e.sets.map(s=>({reps:s.reps||s.prevReps||0,weight:s.weight||s.prevWeight||0,done:s.done}))
+      sets:e.sets.filter(s=>s.done||(s.reps&&s.weight)).map(s=>({reps:s.reps||s.prevReps||0,weight:s.weight||s.prevWeight||0,done:s.done}))
     }))
   };
   state.workouts.push(wk);save();
