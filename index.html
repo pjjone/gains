@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d0d12">
@@ -55,7 +55,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .btn-danger{background:transparent;border:1px solid var(--danger);color:var(--danger);}
 .btn-export{background:var(--s2);border:2px solid var(--accent);color:var(--accent);}
 .btn-sm{padding:8px 16px;font-size:13px;width:auto;display:inline-block;}
-.input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;}
+.input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;}
 .input:focus{outline:none;border-color:var(--accent);}
 .input::placeholder{color:var(--muted);}
 textarea.input{resize:none;min-height:64px;line-height:1.5;}
@@ -85,12 +85,12 @@ textarea.input{resize:none;min-height:64px;line-height:1.5;}
 .sets-head{font-size:11px;color:var(--muted);text-align:center;margin-bottom:8px;}
 .set-n{width:28px;height:28px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);font-weight:700;flex-shrink:0;}
 .set-n.done{background:var(--accent);color:var(--accent-text);}
-.set-input{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:8px 4px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;text-align:center;width:100%;-webkit-appearance:none;}
+.set-input{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:8px 4px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;text-align:center;width:100%;-webkit-appearance:none;}
 .set-input:focus{outline:none;border-color:var(--accent);}
 .check-set{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--muted);transition:all .15s;flex-shrink:0;}
 .check-set.done{background:var(--accent);border-color:var(--accent);color:var(--accent-text);}
 .note-row{padding:0 16px 12px;}
-.note-input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;resize:none;min-height:52px;line-height:1.5;}
+.note-input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;resize:none;min-height:52px;line-height:1.5;}
 .note-input:focus{outline:none;border-color:var(--accent);}
 .note-input::placeholder{color:var(--muted);}
 .add-set-btn{margin:0 16px 12px;padding:8px;border:1px dashed var(--border);border-radius:10px;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;width:calc(100% - 32px);}
@@ -122,6 +122,7 @@ textarea.input{resize:none;min-height:64px;line-height:1.5;}
 .export-banner-title{font-weight:600;font-size:14px;color:var(--accent);}
 .export-banner-sub{font-size:12px;color:var(--muted);margin-top:2px;}
 .label{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;}
+html{touch-action:pan-x pan-y;}
 </style>
 </head>
 <body>
@@ -381,6 +382,7 @@ let currentHistDetailId=null;
 
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36);}
 function save(){localStorage.setItem('gains_v2',JSON.stringify(state));}
+function saveActiveWorkout(){if(activeWorkout){const{timerInterval,...toSave}=activeWorkout;localStorage.setItem('gains_active_v2',JSON.stringify(toSave));}else{localStorage.removeItem('gains_active_v2');}}
 function load(){
   const d=localStorage.getItem('gains_v2');
   if(d){state={exercises:[],programs:[],workouts:[],...JSON.parse(d)};}
@@ -833,6 +835,7 @@ function beginActiveWorkout(data){
   tabs.forEach(t=>document.getElementById(`screen-${t}`).classList.remove('active'));
   document.getElementById('screen-workout').classList.add('active');
   document.getElementById('main-nav').style.display='none';
+  saveActiveWorkout();
 }
 
 function renderActiveWorkout(){
@@ -948,14 +951,14 @@ function finishWorkout(){
     }))
   };
   state.workouts.push(wk);save();
-  activeWorkout=null;exitWorkoutScreen();
+  activeWorkout=null;saveActiveWorkout();exitWorkoutScreen();
   showToast('🎉 Тренировка сохранена!');
 }
 
 function cancelWorkout(){
   if(!confirm('Отменить тренировку? Данные не сохранятся.'))return;
   clearInterval(activeWorkout?.timerInterval);
-  activeWorkout=null;exitWorkoutScreen();
+  activeWorkout=null;saveActiveWorkout();exitWorkoutScreen();
 }
 
 function exitWorkoutScreen(){
@@ -1020,7 +1023,15 @@ function deleteWorkoutFromDetail(){
 
 // ---- INIT ----
 load();
-renderHome();
+const _savedAW=localStorage.getItem('gains_active_v2');
+if(_savedAW){try{beginActiveWorkout(JSON.parse(_savedAW));}catch(e){localStorage.removeItem('gains_active_v2');renderHome();}}
+else{renderHome();}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&activeWorkout)saveActiveWorkout();});
+document.addEventListener('gesturestart',e=>e.preventDefault());
+document.addEventListener('gesturechange',e=>e.preventDefault());
+document.addEventListener('gestureend',e=>e.preventDefault());
+document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault();},{passive:false});
+let _lastTap=0;document.addEventListener('touchend',e=>{const now=Date.now();if(now-_lastTap<300){e.preventDefault();}else{_lastTap=now;}},{passive:false});
 </script>
 </body>
 </html>
