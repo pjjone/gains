@@ -122,6 +122,7 @@ textarea.input{resize:none;min-height:64px;line-height:1.5;}
 .export-banner-title{font-weight:600;font-size:14px;color:var(--accent);}
 .export-banner-sub{font-size:12px;color:var(--muted);margin-top:2px;}
 .label{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;}
+html{touch-action:pan-x pan-y;}
 </style>
 </head>
 <body>
@@ -1026,6 +1027,10 @@ const _savedAW=localStorage.getItem('gains_active_v2');
 if(_savedAW){try{beginActiveWorkout(JSON.parse(_savedAW));}catch(e){localStorage.removeItem('gains_active_v2');renderHome();}}
 else{renderHome();}
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&activeWorkout)saveActiveWorkout();});
+document.addEventListener('gesturestart',e=>e.preventDefault());
+document.addEventListener('gesturechange',e=>e.preventDefault());
+document.addEventListener('gestureend',e=>e.preventDefault());
+let _lastTap=0;document.addEventListener('touchend',e=>{const now=Date.now();if(now-_lastTap<300){e.preventDefault();}else{_lastTap=now;}},{passive:false});
 </script>
 </body>
 </html>
