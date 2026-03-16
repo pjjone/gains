@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d0d12">
@@ -381,6 +381,7 @@ let currentHistDetailId=null;
 
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36);}
 function save(){localStorage.setItem('gains_v2',JSON.stringify(state));}
+function saveActiveWorkout(){if(activeWorkout){const{timerInterval,...toSave}=activeWorkout;localStorage.setItem('gains_active_v2',JSON.stringify(toSave));}else{localStorage.removeItem('gains_active_v2');}}
 function load(){
   const d=localStorage.getItem('gains_v2');
   if(d){state={exercises:[],programs:[],workouts:[],...JSON.parse(d)};}
@@ -833,6 +834,7 @@ function beginActiveWorkout(data){
   tabs.forEach(t=>document.getElementById(`screen-${t}`).classList.remove('active'));
   document.getElementById('screen-workout').classList.add('active');
   document.getElementById('main-nav').style.display='none';
+  saveActiveWorkout();
 }
 
 function renderActiveWorkout(){
@@ -948,14 +950,14 @@ function finishWorkout(){
     }))
   };
   state.workouts.push(wk);save();
-  activeWorkout=null;exitWorkoutScreen();
+  activeWorkout=null;saveActiveWorkout();exitWorkoutScreen();
   showToast('🎉 Тренировка сохранена!');
 }
 
 function cancelWorkout(){
   if(!confirm('Отменить тренировку? Данные не сохранятся.'))return;
   clearInterval(activeWorkout?.timerInterval);
-  activeWorkout=null;exitWorkoutScreen();
+  activeWorkout=null;saveActiveWorkout();exitWorkoutScreen();
 }
 
 function exitWorkoutScreen(){
@@ -1020,7 +1022,10 @@ function deleteWorkoutFromDetail(){
 
 // ---- INIT ----
 load();
-renderHome();
+const _savedAW=localStorage.getItem('gains_active_v2');
+if(_savedAW){try{beginActiveWorkout(JSON.parse(_savedAW));}catch(e){localStorage.removeItem('gains_active_v2');renderHome();}}
+else{renderHome();}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&activeWorkout)saveActiveWorkout();});
 </script>
 </body>
 </html>
