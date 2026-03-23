@@ -846,7 +846,7 @@ function renderActiveWorkout(){
 function renderExBlock(ei){
   const ex=activeWorkout.exercises[ei];
   const prevSummary=ex.prevSets?ex.prevSets.map(s=>`${s.reps}п×${s.weight}кг`).join('  '):'первый раз';
-  const prevNoteHtml=ex.prevNote?`<div style="font-size:11px;color:var(--orange);margin-top:2px;">📝 ${ex.prevNote}</div>`:'';
+  const prevNoteHtml=ex.prevNote?`<div style="margin-top:8px;padding:8px 10px;background:rgba(255,159,67,0.13);border-left:3px solid var(--orange);border-radius:0 6px 6px 0;font-size:13px;color:var(--orange);line-height:1.4;word-break:break-word;">📝 ${ex.prevNote}</div>`:'';
   return `
     <div class="ex-block" id="ex-block-${ei}">
       <div class="ex-block-head">
@@ -855,7 +855,13 @@ function renderExBlock(ei){
           <div class="ex-block-prev">🕐 ${prevSummary}</div>
           ${prevNoteHtml}
         </div>
-        <div onclick="removeExFromWorkout(${ei})" style="width:28px;height:28px;border-radius:50%;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:var(--muted);flex-shrink:0;margin-left:8px;">✕</div>
+        <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;margin-left:8px;">
+          <div style="display:flex;gap:4px;">
+            <div onclick="moveExUp(${ei})" style="width:26px;height:26px;border-radius:50%;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:${ei===0?'var(--border)':'var(--muted)'};${ei===0?'pointer-events:none;':''}">▲</div>
+            <div onclick="moveExDown(${ei})" style="width:26px;height:26px;border-radius:50%;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:${ei===activeWorkout.exercises.length-1?'var(--border)':'var(--muted)'};${ei===activeWorkout.exercises.length-1?'pointer-events:none;':''}">▼</div>
+          </div>
+          <div onclick="removeExFromWorkout(${ei})" style="width:58px;height:22px;border-radius:6px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--muted);">✕ убрать</div>
+        </div>
       </div>
       <div class="sets-table">
         <div class="sets-row sets-head"><div></div><div>Повторы</div><div>Вес кг</div><div></div></div>
@@ -918,6 +924,18 @@ function removeSetFromEx(ei,si){
 }
 
 function removeExFromWorkout(ei){if(!activeWorkout)return;activeWorkout.exercises.splice(ei,1);renderActiveWorkout();}
+function moveExUp(ei){
+  if(!activeWorkout||ei===0)return;
+  activeWorkout.exercises.forEach((ex,i)=>{const n=document.getElementById(`note-${i}`);if(n)ex.note=n.value;});
+  const exs=activeWorkout.exercises;[exs[ei-1],exs[ei]]=[exs[ei],exs[ei-1]];
+  renderActiveWorkout();
+}
+function moveExDown(ei){
+  if(!activeWorkout||ei>=activeWorkout.exercises.length-1)return;
+  activeWorkout.exercises.forEach((ex,i)=>{const n=document.getElementById(`note-${i}`);if(n)ex.note=n.value;});
+  const exs=activeWorkout.exercises;[exs[ei],exs[ei+1]]=[exs[ei+1],exs[ei]];
+  renderActiveWorkout();
+}
 function addExToWorkout(){openPickExerciseModal('workout');}
 
 function addExerciseToActiveWorkout(exId){
@@ -950,7 +968,13 @@ function finishWorkout(){
       sets:e.sets.filter(s=>s.done||(s.reps&&s.weight)).map(s=>({reps:s.reps||s.prevReps||0,weight:s.weight||s.prevWeight||0,done:s.done}))
     }))
   };
-  state.workouts.push(wk);save();
+  state.workouts.push(wk);
+  // If exercises were reordered/added/removed during workout, sync back to program
+  if(activeWorkout.programId){
+    const prog=state.programs.find(p=>p.id===activeWorkout.programId);
+    if(prog)prog.exerciseIds=activeWorkout.exercises.map(e=>e.exerciseId);
+  }
+  save();
   activeWorkout=null;saveActiveWorkout();exitWorkoutScreen();
   showToast('🎉 Тренировка сохранена!');
 }
